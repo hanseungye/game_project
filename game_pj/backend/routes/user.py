@@ -100,7 +100,8 @@ async def send_message(request: EmailSendRequest, db: Session = Depends(get_db))
         FROM users
         WHERE email = :email
         LIMIT 1
-    """)
+        """
+    )
 
     result = db.execute(query, {"email": request.email})
 

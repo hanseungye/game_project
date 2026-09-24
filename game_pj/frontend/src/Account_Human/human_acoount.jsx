@@ -3,7 +3,9 @@ import './human_acoount.css'
 import UserInput from '../Components/UserInput';
 import UserButton from '../Components/UserButton';
 import { useNavigate } from 'react-router-dom';
-import axios from "axios";
+import { sendVerificationCode, verifyEmailCode, signup } from "../api/authApi"
+import { forwardings } from '../api/forwardings';
+import {emailCheck} from '../api/email_check';
 const step = [
     { id: 1, label: "계정 생성" },
     { id: 2, label: "취향 설정" },
@@ -49,63 +51,42 @@ const Human_Account = () => {
     // 이메일 인증번호를 처리하는 함수
     const handleSendCode = async () => {
         const email = formData.email.trim();
-
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
+        const Check = emailCheck(email,emailRegex);
 
-        // 이메일이 null이면
-        if (!emailRegex.test(email)) {
-            alert("올바른 이메일을 입력해주세요");
+        // return 값이 존재하면 화면에 출력
+        if (Check){
+            alert(Check);
             return;
         }
         try {
-            await axios.post(
-                "http://localhost:8000/auth/email/send_code",
-                {
-                    email: email
-                },
-                {
-                    // FastAPI가 설정한 쿠키를 브라우저가 주고받도록
-                    // 하기 위해 사용한다.
-                    withCredentials: true
-                }
-            );
+            await sendVerificationCode(email);
+
             setIsCodeSent(true);
+
             setVerificationMessage(
                 "인증번호가 이메일로 발송되었습니다."
             );
 
         } catch (e) {
             console.error(e);
-            alert("올바른 이메일을 입력해주세요.");
+
+            alert("인증 번호 발송을 실패했습니다.");
         }
     };
     // 인증번호 일치 여부를 확인하는 함수
     const handleVerifyCode = async () => {
+        const email = formData.email.trim();
         const code = verificationCode.trim();
-       
-        // 인증번호를 입력 안한 경우
-        if (!verificationCode.trim()) {
+
+        if (!code) {
             alert("인증번호를 입력해주세요.");
             return;
         }
-        else if (!code){
-            alert("인증번호를 입력해주세요.");
-            return;
-        }
+
         try {
-            const response = await axios.post(
-                "http://localhost:8000/auth/email/verify-code",
-                {
-                    email : formData.email,
-                    code: code,
-                },
-                {
-                    // FastAPI가 설정한 쿠키를 브라우저가 주고받도록
-                    // 하기 위해 사용한다.
-                    withCredentials: true
-                }
-            );
+            const response = await verifyEmailCode(email, code);
 
             // 이메일이 올바르게 입력되었으면
             if (response.data.verified) {
@@ -128,43 +109,45 @@ const Human_Account = () => {
     };
     const forwarding = async (e) => {
         e.preventDefault();
-        const nick_name = formData.nickname.trim()
-        const email = formData.email.trim()
-        const login_id = formData.login_id.trim()
-        const password = formData.password.trim()
-        const passwordConfirm = formData.passwordConfirm.trim()
 
+        const for_object = {
+            nick_name: formData.nickname.trim(),
+            email: formData.email.trim(),
+            login_id: formData.login_id.trim(),
+            password: formData.password.trim(),
+            passwordConfirm: formData.passwordConfirm.trim()
+        };
+        
+        const {
+            nick_name,
+            email,
+            login_id,
+            password,
+            passwordConfirm,
+        } = for_object;
 
-        // 1. 빈 입력값 검사
-        if (!nick_name) {
-            alert("닉네임을 입력해주세요.");
+        const validationMessage =  forwardings(for_object);
+        // validationMessage가 존재하면
+        // 알림창(비어 있다고 알리기)
+        if (validationMessage){
+            alert(`${validationMessage}`);
             return;
         }
-
-        if (!email) {
-            alert("이메일을 입력해주세요.");
+        if (!emailVerified){
+            alert("이메일 인증을 완료해주세요.");
             return;
         }
-
-        if (!login_id) {
-            alert("아이디를 입력해주세요.");
+        // 약관 동의 검사
+        if (!formData.agreement) {
+            alert("이용 약관에 동의해주세요.");
             return;
         }
-
-        if (!password) {
-            alert("비밀번호를 입력해주세요.");
-            return;
-        }
-        if (!passwordConfirm) {
-            alert("비밀번호가 일치하지 않습니다!");
-        }
-
-        // 2. 이메일 형식 검사
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-        if (!emailRegex.test(email)) {
-            alert("올바른 이메일 형식으로 입력해주세요.");
-            return;
+        const emCheck = emailCheck(email,emailRegex);
+        if (emCheck){
+            alert(emCheck);
+            return
         }
 
         // 3. 비밀번호 확인 검사
@@ -178,21 +161,18 @@ const Human_Account = () => {
         // http://localhost/auth/signup 해당 주소로
         // 데이터 전송
         try {
-            const response = await axios.post(
-                "http://localhost:8000/auth/signup",
-                {
-                    nickname: nick_name,
-                    email: email,
-                    login_id: login_id,
-                    password: password
-                }
-            );
+            const response = await signup({
+                nickname: nick_name,
+                email: email,
+                login_id: login_id,
+                password: password
+            });
+            // response.data 값이 존재하면
+            if (response.data) {
+                alert("회원가입이 완료되었습니다.");
+                navigate("/"); // 회원가입을 완료하면 메인 페이지로 이동
+            }
 
-            console.log(response.data);
-
-            alert("회원가입이 완료했습니다.");
-
-            navigate("/"); // 회원가입을 완료하면 메인 페이지로 이동
         } catch (error) {
             console.error(error);
 
