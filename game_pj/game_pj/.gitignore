@@ -1,0 +1,21 @@
+# Python
+**/.venv/
+**/venv/
+**/__pycache__/
+*.pyc
+
+# 환경변수
+**/.env
+**/.env.*
+
+# React / Node
+**/node_modules/
+**/build/
+**/dist/
+
+# IDE
+.vscode/
+
+# OS
+.DS_Store
+Thumbs.db

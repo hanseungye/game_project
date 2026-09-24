@@ -3,8 +3,3 @@
     align-items: center;
     gap:40px;
 }
-.email-row{
-    display: flex;
-    align-items: flex-end;
-    gap:0.5vw;
-}
