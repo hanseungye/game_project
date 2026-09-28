@@ -4,8 +4,9 @@ const UserInput = ({
     name,
     type = "text",
     placeholder,
+    autoComplete,
     value,
-    onChange
+    onChange,
 }) =>{
     
     return (
@@ -21,6 +22,7 @@ const UserInput = ({
                 placeholder={placeholder}
                 value={value}
                 onChange={onChange}
+                autoComplete={autoComplete}
             />
 
         </div>

@@ -17,7 +17,7 @@ post: http://localhost/auth/signup
 """
 
 user_router = APIRouter(
-    prefix="/auth", tags=["users"]  # 모든 라우터 경로가 이렇게 설정됨.
+    prefix="/auth", tags=["auth"]  # 모든 라우터 경로가 이렇게 설정됨.
 )
 
 verification_codes: dict[str, str] = {}

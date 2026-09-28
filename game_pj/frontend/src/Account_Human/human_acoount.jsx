@@ -3,9 +3,9 @@ import './human_acoount.css'
 import UserInput from '../Components/UserInput';
 import UserButton from '../Components/UserButton';
 import { useNavigate } from 'react-router-dom';
-import { sendVerificationCode, verifyEmailCode, signup } from "../api/authApi"
-import { forwardings } from '../api/forwardings';
-import {emailCheck} from '../api/email_check';
+import { sendVerificationCode, verifyEmailCode, signup } from "../account_api/authApi"
+import { forwardings } from '../account_api/forwardings';
+import {emailCheck} from '../account_api/email_check';
 const step = [
     { id: 1, label: "계정 생성" },
     { id: 2, label: "취향 설정" },
@@ -127,8 +127,6 @@ const Human_Account = () => {
         } = for_object;
 
         const validationMessage =  forwardings(for_object);
-        // validationMessage가 존재하면
-        // 알림창(비어 있다고 알리기)
         if (validationMessage){
             alert(`${validationMessage}`);
             return;
