@@ -1,12 +1,13 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import UserInput from "../Components/UserInput";
-import { login } from "../login_api/login_auth";
+import { login, getMe } from "../login_api/login_auth";
 
 const Login = () => {
     const navigate = useNavigate();
+    const savedEmail = localStorage.getItem("savedEmail");
     const [formData, setFormData] = useState({
-        email: "",
+        email: savedEmail || "",
         password: "",
         keepLogin: false
     });
@@ -18,9 +19,9 @@ const Login = () => {
         e.preventDefault();
         const loginData = {
             email: formData.email.trim(),
-            password: formData.password
+            password: formData.password,
+            keep_login: formData.keepLogin
         };
-        console.log(loginData.password);
         if (!loginData.email) {
             alert("이메일을 입력해주세요.");
             return;
@@ -30,17 +31,30 @@ const Login = () => {
             alert("비밀번호를 입력해주세요.");
             return;
         }
-  
+
         try {
             const response = await login(loginData);
 
-            console.log("응답 : ", response);
-            console.log("응답 데이터: ", response.data);
+            alert(response.data.message);
+
+            const meResponse = await getMe();
+            console.log("현재 로그인 사용자 : ", meResponse.data);
+
+            if (formData.keepLogin) {
+                localStorage.setItem("savedEmail", loginData.email);
+            } else {
+                localStorage.removeItem("savedEmail");
+            }
+
+
 
         } catch (error) {
-            console.log("에러:",error);
-            console.log("서버 응답:",error.response);
-            console.log("서버 데이터:",error.response?.data);
+            console.error("로그인 에러:", error);
+
+            const message = error.response?.data?.detail ||
+                "로그인 중 오류가 발생했습니다.";
+
+            alert(message);
         }
     };
 

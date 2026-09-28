@@ -6,6 +6,7 @@ const UserInput = ({
     placeholder,
     autoComplete,
     value,
+    checked,
     onChange,
 }) =>{
     
@@ -21,6 +22,7 @@ const UserInput = ({
                 type={type}
                 placeholder={placeholder}
                 value={value}
+                checked = {type === "checkbox" ? checked : undefined}
                 onChange={onChange}
                 autoComplete={autoComplete}
             />

@@ -9,3 +9,12 @@ export const login = async (loginData) => {
         }
     );
 };
+
+export const getMe = async () =>{
+    return axios.get(
+        "http://localhost:8000/auth/me",
+        {
+            withCredentials : true
+        }
+    );
+};
