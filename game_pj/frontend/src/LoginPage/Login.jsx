@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import UserInput from "../Components/UserInput";
 import { login, getMe } from "../login_api/login_auth";
+import UserButton from "../Components/UserButton";
 
 const Login = () => {
     const navigate = useNavigate();
@@ -11,10 +12,14 @@ const Login = () => {
         password: "",
         keepLogin: false
     });
+    const handleFindPassword = () => {
+        navigate("/forget-password");
+    };
 
     const handleHuman = () => {
         navigate("/account");
     };
+
     const handleLogin = async (e) => {
         e.preventDefault();
         const loginData = {
@@ -125,9 +130,11 @@ const Login = () => {
                             로그인 상태 유지
                         </label>
 
-                        <button type="button">
-                            비밀번호 찾기
-                        </button>
+                        <UserButton
+                            type="button"
+                            onClick = {handleFindPassword}
+                            text_human= "비밀번호 찾기"
+                        />
                     </div>
                     <button type="submit">
                         로그인

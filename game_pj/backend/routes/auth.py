@@ -155,3 +155,20 @@ async def verify_code(request: VerifyCodeRequest):
     del verification_codes[email]
 
     return {"verified": True, "message": "이메일 인증이 완료되었습니다."}
+
+@user_router.post("/email/send-code")
+async def check(
+    request : EmailSendRequest,
+) : 
+    email= request.email
+    print("Request Body:")
+    print(request.model_dump_json(indent=2))
+    print(f"email: {email}")
+    try:
+        return {
+            "message" : "이메일이 정상적으로 도달하였습니다."
+        }
+    except Exception as e :
+        print(f"error 정보 : {e}")
+        raise HTTPException(status_code=500,detail="서버에서 오류가 발생했다.")
+    

@@ -10,7 +10,7 @@ export const login = async (loginData) => {
     );
 };
 
-export const getMe = async () =>{
+export const getMe = async () => {
     return axios.get(
         "http://localhost:8000/auth/me",
         {
@@ -18,3 +18,13 @@ export const getMe = async () =>{
         }
     );
 };
+
+export const ps_check = async (data) => {
+    return axios.post(
+        "http://localhost:8000/auth/email/send-code",
+        data,
+        {
+            withCredentials : true
+        }
+    )
+}
